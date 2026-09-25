@@ -15,7 +15,7 @@ class AbaBuscar:
         self._montar(aba)
 
     def _montar(self, aba):
-        ctk.CTkLabel(aba, text="Código:").grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        ctk.CTkLabel(aba, text="Código de Barras:").grid(row=0, column=0, padx=10, pady=10, sticky="w")
         self.ent_busca_codigo = ctk.CTkEntry(aba, width=200)
         self.ent_busca_codigo.grid(row=0, column=1, padx=10, pady=10)
 
@@ -24,10 +24,10 @@ class AbaBuscar:
         self.ent_busca_nome.grid(row=1, column=1, padx=10, pady=10)
 
         btn_buscar = ctk.CTkButton(
-            aba, text="Buscar", width=100, command=self.acao_buscar,
+            aba, text="Buscar", width=300, command=self.acao_buscar,
             fg_color="#A37BD6", hover_color="#8358BE",
         )
-        btn_buscar.grid(row=0, column=2, padx=10, pady=10)
+        btn_buscar.grid(row=4, column=1, padx=10, pady=10)
 
         self.lbl_resultado_busca = ctk.CTkLabel(aba, text="", justify="left", anchor="w")
         self.lbl_resultado_busca.grid(row=3, column=0, columnspan=3, padx=10, pady=15, sticky="w")

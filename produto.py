@@ -1,6 +1,8 @@
 class Produto:
     def __init__(self, codigo: int, nome: str, preco: float, quantidade: int,
-                 categoria: str = "sem categoria"):
+                 categoria: str = "Sem categoria", id: int = None):
+        # 'id' é interno — gerado pelo SQLite, nunca exibido na interface.
+        self.id = id
         self.codigo = int(codigo)
         self.nome = nome
         self.preco = float(preco)
@@ -15,8 +17,9 @@ class Produto:
         if nova_quantidade >= 0:
             self.quantidade = int(nova_quantidade)
 
-    def to_dict(self) -> dict:                     
+    def to_dict(self) -> dict:
         return {
+            "id": self.id,            # oculto, mas útil p/ debug
             "codigo": self.codigo,
             "nome": self.nome,
             "preco": self.preco,
@@ -34,4 +37,5 @@ class Produto:
         )
 
     def __repr__(self) -> str:
-        return f"Produto({self.codigo}, {self.nome!r}, R${self.preco}, qtd={self.quantidade})"
+        return (f"Produto(id={self.id}, codigo={self.codigo}, "
+                f"{self.nome!r}, R${self.preco}, qtd={self.quantidade})")

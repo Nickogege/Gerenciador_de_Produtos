@@ -30,8 +30,8 @@ class AppEstoque(ctk.CTk):
         self.estoque = Estoque()
 
         
-        self.bd = BancoDeDados("produtos.csv", estoque=self.estoque)
-
+        self.bd = BancoDeDados("produtos.db", estoque=self.estoque)
+        
         self.abas = ctk.CTkTabview(
             self,
             segmented_button_selected_color="#A37BD6",

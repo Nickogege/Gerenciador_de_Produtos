@@ -14,7 +14,7 @@ class AbaCadastrar:
         self._montar(aba)
 
     def _montar(self, aba):
-        ctk.CTkLabel(aba, text="Código:").grid(row=0, column=0, padx=10, pady=8, sticky="w")
+        ctk.CTkLabel(aba, text="Código de Barras:").grid(row=0, column=0, padx=10, pady=8, sticky="w")
         self.ent_codigo = ctk.CTkEntry(aba, width=220)
         self.ent_codigo.grid(row=0, column=1, padx=10, pady=8)
 
