@@ -1,3 +1,4 @@
+# aba_cadastrar.py
 import customtkinter as ctk
 from tkinter import messagebox
 
@@ -14,57 +15,92 @@ class AbaCadastrar:
     def __init__(self, aba, app):
         self.app = app
         self.estoque = app.estoque
+        self.aba = aba
+        self._widgets_texto = []  # labels para repintar
         self._montar(aba)
 
     def _montar(self, aba):
-        # --- Código de barras (apenas dígitos) ---
-        ctk.CTkLabel(aba, text="Código de Barras:").grid(row=0, column=0, padx=10, pady=8, sticky="w")
+        self.lbl_codigo = ctk.CTkLabel(aba, text="Código de Barras:")
+        self.lbl_codigo.grid(row=0, column=0, padx=10, pady=8, sticky="w")
         vcmd_codigo = (aba.register(self._validar_codigo), "%P")
         self.ent_codigo = ctk.CTkEntry(aba, width=220, validate="key", validatecommand=vcmd_codigo)
         self.ent_codigo.grid(row=0, column=1, padx=10, pady=8)
 
-        # --- Nome (auto-capitalizado no foco-out) ---
-        ctk.CTkLabel(aba, text="Nome do Produto:").grid(row=1, column=0, padx=10, pady=8, sticky="w")
+        self.lbl_nome = ctk.CTkLabel(aba, text="Nome do Produto:")
+        self.lbl_nome.grid(row=1, column=0, padx=10, pady=8, sticky="w")
         self.ent_nome = ctk.CTkEntry(aba, width=220)
         self.ent_nome.grid(row=1, column=1, padx=10, pady=8)
         self.ent_nome.bind("<FocusOut>", self._capitalizar_nome)
         self.ent_nome.bind("<Return>", self._capitalizar_nome)
 
-        # --- Preço (apenas dígitos + 1 vírgula/ponto) ---
-        ctk.CTkLabel(aba, text="Preço (R$):").grid(row=2, column=0, padx=10, pady=8, sticky="w")
+        self.lbl_preco = ctk.CTkLabel(aba, text="Preço (R$):")
+        self.lbl_preco.grid(row=2, column=0, padx=10, pady=8, sticky="w")
         vcmd_preco = (aba.register(self._validar_preco), "%P")
         self.ent_preco = ctk.CTkEntry(aba, width=220, validate="key", validatecommand=vcmd_preco)
         self.ent_preco.grid(row=2, column=1, padx=10, pady=8)
 
-        # --- Quantidade (apenas dígitos) ---
-        ctk.CTkLabel(aba, text="Quantidade:").grid(row=3, column=0, padx=10, pady=8, sticky="w")
+        self.lbl_qtd = ctk.CTkLabel(aba, text="Quantidade:")
+        self.lbl_qtd.grid(row=3, column=0, padx=10, pady=8, sticky="w")
         vcmd_qtd = (aba.register(self._validar_quantidade), "%P")
         self.ent_qtd = ctk.CTkEntry(aba, width=220, validate="key", validatecommand=vcmd_qtd)
         self.ent_qtd.grid(row=3, column=1, padx=10, pady=8)
 
-        # --- Categoria ---
-        ctk.CTkLabel(aba, text="Categoria:").grid(row=4, column=0, padx=10, pady=8, sticky="w")
+        self.lbl_cat = ctk.CTkLabel(aba, text="Categoria:")
+        self.lbl_cat.grid(row=4, column=0, padx=10, pady=8, sticky="w")
         self.cmb_categoria = ctk.CTkComboBox(
             aba, values=self._categorias_disponiveis(), state="readonly", width=220
         )
         self.cmb_categoria.set(self._categorias_disponiveis()[0])
         self.cmb_categoria.grid(row=4, column=1, padx=10, pady=8)
 
-        btn_nova_cat = ctk.CTkButton(
+        self.btn_nova_cat = ctk.CTkButton(
             aba, text="+ Nova", width=70, command=self.acao_nova_categoria,
-            fg_color="#A37BD6", hover_color="#8358BE",
         )
-        btn_nova_cat.grid(row=4, column=2, padx=5, pady=8)
+        self.btn_nova_cat.grid(row=4, column=2, padx=5, pady=8)
 
-        btn_cadastrar = ctk.CTkButton(
+        self.btn_cadastrar = ctk.CTkButton(
             aba, text="Cadastrar Produto", command=self.acao_cadastrar,
-            fg_color="#A37BD6", hover_color="#8358BE",
         )
-        btn_cadastrar.grid(row=5, column=0, columnspan=2, pady=20)
+        self.btn_cadastrar.grid(row=5, column=0, columnspan=2, pady=20)
+
+        self._widgets_texto = [
+            self.lbl_codigo, self.lbl_nome, self.lbl_preco,
+            self.lbl_qtd, self.lbl_cat,
+        ]
+        self._entries = [self.ent_codigo, self.ent_nome, self.ent_preco, self.ent_qtd]
+
+    # ---------- tema ----------
+    def aplicar_tema(self, p):
+        self.aba.configure(fg_color=p["fundo"])
+        for lbl in self._widgets_texto:
+            lbl.configure(text_color=p["texto"])
+        for ent in self._entries:
+            ent.configure(
+                fg_color=p["entrada"],
+                border_color=p["entrada_borda"],
+                text_color=p["texto"],
+            )
+        self.cmb_categoria.configure(
+            fg_color=p["entrada"],
+            border_color=p["entrada_borda"],
+            text_color=p["texto"],
+            button_color=p["botao"],
+            button_hover_color=p["botao_hover"],
+            dropdown_fg_color=p["entrada"],
+            dropdown_text_color=p["texto"],
+            dropdown_hover_color=p["fundo_frame_hover"],
+        )
+        self.btn_nova_cat.configure(
+            fg_color=p["botao"], hover_color=p["botao_hover"],
+            text_color=p["botao_texto"],
+        )
+        self.btn_cadastrar.configure(
+            fg_color=p["botao"], hover_color=p["botao_hover"],
+            text_color=p["botao_texto"],
+        )
 
     # ---------- categorias ----------
     def _categorias_disponiveis(self):
-        """Oculta 'sem categoria' quando existirem outras categorias."""
         cats = self.estoque.categorias
         outras = [c for c in cats if c.lower() != "sem categoria"]
         if outras:
@@ -72,14 +108,12 @@ class AbaCadastrar:
         return cats
 
     def atualizar_categoria_values(self, categorias):
-        """Chamado pelo App quando a lista de categorias muda em qualquer aba."""
         valores = self._categorias_disponiveis()
         self.cmb_categoria.configure(values=valores)
-        # Se a categoria atual não existe mais, seleciona a primeira
         if self.cmb_categoria.get() not in valores:
             self.cmb_categoria.set(valores[0])
 
-    # ---------- validações de input ----------
+    # ---------- validações ----------
     def _validar_codigo(self, texto):
         return validar_inteiro(texto)
 
@@ -110,8 +144,6 @@ class AbaCadastrar:
         if not nome:
             messagebox.showerror("Erro", "Digite um nome para o produto.")
             return
-
-        # capitaliza antes de salvar
         nome = capitalizar_nome(nome)
 
         try:
